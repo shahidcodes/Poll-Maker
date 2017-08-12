@@ -1,0 +1,39 @@
+html
+  head
+    title #{title}
+    link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/css/materialize.min.css")
+    link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css")
+    link(rel="stylesheet", href="css/style.css")
+    
+  body.grey.lighten-2
+    nav.blue.darken-1
+      .container
+        .nav-wrapper
+          a.brand-logo(href='/') Home
+          ul#nav-mobile.right.hide-on-med-and-down
+            - if(!auth) auth = {};
+            if auth.login
+              li
+                a(href="/poll/create")
+                  i.fa.fa-plus
+              li
+                a(href='/logout')
+                  i.fa.fa-sign-out
+            else
+              li
+                a(href='/login')
+                  i.fa.fa-sign-in
+            li
+              a(href='/polls')
+                i.fa.fa-th-list
+
+    div.container
+      block content
+      
+  script(src="https://code.jquery.com/jquery-3.2.1.min.js")
+  script(src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/js/materialize.min.js")
+  script.
+    var val = "#{msg}"
+    if(val != "")Materialize.toast(val, 1000)
+      
+  block scripts
