@@ -3,21 +3,23 @@ extends layout.pug
 block content
   .row
     .card
-      .card-content
-        span.card-title
-          h2=data.name
-        div.row
-          div.col.s12.m6
-            form(action="/poll/"+data._id, method="POST")
-              div.input-field
+      form(action="/poll/"+data._id, method="POST")
+        .card-content
+          span.card-title
+            h2=data.name
+          div.row
+            div.col.s12.m12
               each option, index in data.options
                 p
-                  input(name=data.name, id='op-'+index, type='radio')
-                  label(for='op-'+index, class="black-text")=option.value
-              button(type="submit", class="btn")
-                i.fa.fa-paper-plane
-          div.s12.m6
-            canvas(id="myChart", widht="200", height="200")
+                  input(name="option", id=option.name, type='radio', value=index)
+                  label(for=option.name, class="black-text")=option.value
+          .card-action
+            button(type="submit", class="btn blue view--submit-vote-btn")
+              i.fa.fa-paper-plane
+  .row
+    .card
+      .card-content
+        canvas(id="myChart", widht="200", height="200")
                 
 block scripts
   script(src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.min.js")

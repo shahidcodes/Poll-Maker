@@ -28,14 +28,20 @@ function isLoggedIn(session){
   if(session.loggedIn){
     return session.loggedIn;
   }
-  console.log(session)
+  console.log("isLoggedIn() :", session.loggedIn)
   return false;
 }
 function getUniqueOptionName(){
   return uniqueString();
 }
 function authMiddleware(request, response, next){
-  if(!isLoggedIn(request.session)) response.redirect("/login")
+  
+  if(!request.session.loggedIn){
+    request.session.flash = "You need to login!"
+    response.redirect("/login")
+    return;
+  }
+  
   next()
 }
 
@@ -45,29 +51,44 @@ function getAuth(session){
     auth.login = session.loggedIn ? session.loggedIn : false
     auth.username = session.username ? session.username : "" 
   }
-  console.log("getAuth", auth)
+  console.log("getAuth(): ", auth)
   return auth;
 }
 
 function getFlashMessage(request){
   var msg = request.session.flash
   delete request.session.flash
-  return msg
+  return msg ? msg : ""
 }
 
 // setup cookies
 app.use(function(request, response, next){
   if(request.session.loggedIn){
-    console.log("User Logged In");
+    console.log(`[PATH: ${request.originalUrl}] User Logged In`);
   }
   else{
     if(!request.cookies.user_id){
       response.cookie('user_id', uniqueString());
       response.cookie('voted', JSON.stringify([]))
     }
-    console.log("Cookie",request.cookies.user_id)
+    console.log("Cookie(): ",request.cookies.user_id)
   }
   next();
+})
+
+
+// view all polls (duplicate to / )
+
+app.get("/polls", function(request, response){
+  const db = app.locals.db
+  db.collection("Polls").find({}).toArray(function(err, data){
+    response.render('index', {
+        title:"Polls",
+        data, 
+        auth:getAuth(request.session), 
+        msg: getFlashMessage(request)
+      })
+  })
 })
 
 // create poll
@@ -79,10 +100,11 @@ app.get("/poll/create", authMiddleware ,function(request, response){
 })
 app.post("/poll/create", authMiddleware ,function(request, response){
   var options = request.body["options[]"]
-  console.log(request.body)
+  // console.log(request.body)
   const poll = {
     "name" : request.body.title,
-    "options" : []
+    "options" : [],
+    "voters" : []
   }
   
   options.forEach(option=>{
@@ -113,7 +135,7 @@ app.post("/poll/create", authMiddleware ,function(request, response){
 
 // log user in
 app.get("/login", function(request, response){
-  response.render('login')
+  response.render('login', {msg: getFlashMessage(request)})
 })
 app.post("/login", function(request, response){
   
@@ -172,9 +194,11 @@ app.get("/poll/:id" ,function(request, response){
       optionNames.push(option.value)
     })
     if(!err) response.render("view_poll", {
-          data, 
+          auth:getAuth(request.session),
+          "data" : data, 
           "optionNames" : JSON.stringify(optionNames), 
-          "optionValues" : JSON.stringify(optionValues)
+          "optionValues" : JSON.stringify(optionValues),
+          "msg" : getFlashMessage(request)
         }
       )
     // TODO Proper error object
@@ -189,23 +213,35 @@ app.post("/poll/:id", authMiddleware ,function(request, response){
   const optionIndex = request.body.option
   console.log("POST /poll/", id, optionIndex)
   const db = app.locals.db
+  
   db.collection("Polls").findOne({_id : new ObjectId(id)}, function(err, data){
     
-    if(err) response.render("login", {"error" : JSON.stringify(err)})
+    if(err) response.render("error", {"error" : JSON.stringify(err)})
+    
+    var currentUserID = request.session.userID;
+    console.log("User Voting: ", currentUserID);
     
     
-    data.options[optionIndex].votes = data.options[optionIndex].votes + 1
+    if(data.voters.indexOf(currentUserID) != -1){
+      console.log(`[/post/${id}] : Already Voted ! `)
+      request.session.flash = "You can't vote twice!"
+      response.redirect("/poll/" + id)
+    }else{
+      data.voters.push(currentUserID)
+      console.log(`Current User: ${currentUserID},\nPoll Index ${optionIndex},\nPoll Data ${JSON.stringify(data)}`)
+      data.options[optionIndex].votes = data.options[optionIndex].votes + 1
         
-    db.collection("Polls").updateOne(
-        {_id : new ObjectId(id)},
-        {$set: { options: data.options }},
-        function(err, result){
-            if(result.result.n == 1){              
-              response.redirect("/poll/" + id)
-            }else{
-              response.render("error", {error : "Unknown Error"})
-            }
-        })
+      db.collection("Polls").updateOne(
+          {_id : new ObjectId(id)},
+          {$set: { options: data.options, voters: data.voters }},
+          function(err, result){
+              if(result.result.n == 1){              
+                response.redirect("/poll/" + id)
+              }else{
+                response.render("error", {error : "Unknown Error"})
+              }
+          })
+    }
   })
 })
 
@@ -215,12 +251,11 @@ app.post("/poll/:id", authMiddleware ,function(request, response){
 app.get("/", function (request, response) {
   const db = app.locals.db
   db.collection("Polls").find({}).toArray(function(err, data){
-    // console.log(data)
     response.render('index', {
         title:"Polls",
         data, 
         auth:getAuth(request.session), 
-        msg: request.session.flash ? request.session.flash : ""
+        msg: getFlashMessage(request)
       })
   })
 });
