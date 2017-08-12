@@ -1,0 +1,19 @@
+extends layout.pug
+
+block content
+  div.row
+    each poll in data
+      div.col.s12.m4
+        div.card
+          div.card-content
+            span.card-title
+              a(href="/poll/" + poll._id, class="truncate black-text")=poll.name
+            div.input-field
+              input(type="hidden", name="id", value=poll._id)
+            each option, index in poll.options
+              p
+                input(name="option", id=option.name, type='radio', value=index)
+                label(for=option.name, class="black-text")=option.value
+            button(type="submit", class="btn")
+              i.fa.fa-paper-plane
+  

@@ -1,0 +1,28 @@
+extends layout.pug
+
+block content
+  .row
+    .card
+      .card-content
+        span.card-title
+          h2=data.name
+        div.row
+          div.col.s12.m6
+            form(action="/poll/"+data._id, method="POST")
+              div.input-field
+              each option, index in data.options
+                p
+                  input(name=data.name, id='op-'+index, type='radio')
+                  label(for='op-'+index, class="black-text")=option.value
+              button(type="submit", class="btn")
+                i.fa.fa-paper-plane
+          div.s12.m6
+            canvas(id="myChart", widht="200", height="200")
+                
+block scripts
+  script(src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.min.js")
+  script.
+    var names=!{optionNames}
+    var values=!{optionValues}
+  script(src="/js/view_poll.js")
+          

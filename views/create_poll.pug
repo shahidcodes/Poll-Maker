@@ -1,0 +1,49 @@
+extends layout.pug
+
+block content
+  div.row#app
+    div.col.s12.m12
+      div.card
+        div.card-content
+          span.card-title Create A Poll
+          p
+            form
+              div.input-field
+                input(type="text", name="poll-title" v-model="pollTitle")
+                label(for="poll-title") Poll Title
+              ul.collection.with-header(v-if="options.length>0")
+                li.collection-header
+                  h4 Options
+                li.collection-item(v-for="option, index in options")
+                  div
+                    | {{option}}
+                    a.secondary-content(href='#!', v-on:click="deleteOption(index)")
+                      i.fa.fa-trash
+              div.input-field
+                a.btn(href="#option", v-on:click="openModal") Add Options
+              div.row
+                div.col.m6.s6
+                  div.input-field
+                    a.btn.red.darken-3(v-on:click="createPoll") Create
+                div.col.m6.s6
+                  div.preloader-wrapper.small.active(v-if="loading")
+                    div.spinner-layer.spinner-blue-only
+                      div.circle-clipper.left
+                        div.circle
+                      div.gap-patch
+                        div.circle
+                      div.circle-clipper.right
+                        div.circle
+        #modal1.modal
+          .modal-content
+            .input-field
+              input(type="text", id="option" ,v-model="currentOption")
+              label(for="option") Option
+          .modal-footer
+            a.modal-action.waves-effect.waves-green.btn-flat(href='#!', v-on:click="addOptions") Add
+
+block scripts
+  script(src="https://unpkg.com/vue")
+  script(src="/js/create_poll.js")
+                
+      

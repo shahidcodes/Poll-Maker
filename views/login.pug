@@ -1,0 +1,18 @@
+extends layout.pug
+
+block content
+  div.row
+    div.card
+      div.card-content
+        span.card-title Login
+        div.col.s12.m12
+          form(action="/login", method="POST")
+            div.input-field
+              input(type="text", name="username")
+              label(for="username") Username
+            div.input-field
+              input(type="text", name="password")
+              label(for="password") Password
+            div.input-field
+              input(type="submit", class="btn" value="login")
+        div.clearfix
