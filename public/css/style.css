@@ -1,3 +1,18 @@
 .index--submit-vote-btn , .view--submit-vote-btn{
   width: 100%;
 }
+
+ body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+  }
+
+  main {
+    flex: 1 0 auto;
+  }
+
+.footer-copyright a{
+  margin-left: 10px;
+  margin-right: 10px;
+}
