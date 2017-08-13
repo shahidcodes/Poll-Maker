@@ -2,13 +2,14 @@ extends layout.pug
 
 block content
   div.row
+    h1.page-header My Polls
     each poll in data
       div.col.s12.m4
         div.card
           form(action="/poll/"+poll._id, method="POST")
             div.card-content
               span.card-title
-                a(href="/poll/" + poll._id, class="truncate black-text")=poll.name
+                a(href="/poll/" + poll._id, class="truncate black-text")=poll.name  
               div.row
                 div.col.s12
                   div.input-field
@@ -18,6 +19,8 @@ block content
                       input(name="option", id=option.name, type='radio', value=index)
                       label(for=option.name, class="black-text")=option.value
               div.card-action
-                button(type="submit", class="btn blue accent-3 index--submit-vote-btn")
+                button(type="submit", class="btn blue accent-3 left ")
                   i.fa.fa-paper-plane
-  
+                a(href="/poll/delete/"+poll._id, class="btn blue accent-3 right")
+                  i.fa.fa-trash
+                div.clearfix

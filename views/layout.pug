@@ -2,30 +2,61 @@ html
   head
     title #{title}
     link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/css/materialize.min.css")
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
     link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css")
-    link(rel="stylesheet", href="css/style.css")
+    link(rel="stylesheet", href="/css/style.css")
     
   body.grey.lighten-2
-    nav.blue.darken-1
-      .container
-        .nav-wrapper
-          a.brand-logo(href='/') Home
+    nav.blue.accent-3
+      .nav-wrapper
+        .container
+          a.brand-logo(href='/') Poll Maker
+          a.button-collapse(href='#', data-activates='mobile-demo')
+            i.fa.fa-2x.fa-bars
           ul#nav-mobile.right.hide-on-med-and-down
+            - if(!auth) auth = {};
+            if auth.login
+              li
+                a(href="/poll/create" class='tooltipped' data-position="bottom" data-delay="50" data-tooltip="Create A Poll")
+                  i.fa.fa-plus
+              li
+                a(href='/logout' class='tooltipped' data-position="bottom" data-delay="50" data-tooltip="Logout")
+                  i.fa.fa-sign-out
+              li
+                a(href='/mypolls'  class='tooltipped' data-position="bottom" data-delay="50" data-tooltip="My Polls")
+                  i.fa.fa-th-list
+            else
+              li
+                a(href='/login'  class='tooltipped' data-position="bottom" data-delay="50" data-tooltip="Login")
+                  i.fa.fa-sign-in
+              li
+                a(href='/register'  class='tooltipped' data-position="bottom" data-delay="50" data-tooltip="Register")
+                  i.fa.fa-user-plus
+
+          ul#mobile-demo.side-nav.black-text
             - if(!auth) auth = {};
             if auth.login
               li
                 a(href="/poll/create")
                   i.fa.fa-plus
+                  span Create A Poll
               li
                 a(href='/logout')
                   i.fa.fa-sign-out
+                  span Logout
+              li
+                a(href='/mypolls')
+                  i.fa.fa-th-list
+                  span My Polls
             else
               li
                 a(href='/login')
                   i.fa.fa-sign-in
-            li
-              a(href='/polls')
-                i.fa.fa-th-list
+                  span Login
+              li
+                a(href='/register')
+                  i.fa.fa-user-plus
+                  span Register
 
     div.container
       block content
@@ -33,6 +64,7 @@ html
   script(src="https://code.jquery.com/jquery-3.2.1.min.js")
   script(src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/js/materialize.min.js")
   script.
+    $(function(){ $(".button-collapse").sideNav();})
     var val = "#{msg}"
     if(val != "")Materialize.toast(val, 1000)
       
