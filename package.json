@@ -18,7 +18,8 @@
     "pug": "^0.1.0",
     "unique-string": "^1.0.0",
     "uuid": "^3.1.0",
-    "cookie-parser": "^1.4.3"
+    "cookie-parser": "^1.4.3",
+    "email-check": "^1.1.0"
   },
   "engines": {
     "node": "8.x"

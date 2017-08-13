@@ -1,0 +1,19 @@
+extends layout.pug
+
+block content
+  div.card
+    .card-content
+      span.card-title.center Create A New Account
+      div.row
+        div.col.s12.m6.push-m3
+          form(action="/register", method="POST")
+            div.input-field
+              input(type="text" name="username" id="username")
+              label(for="username") Username
+            div.input-field
+              input(type="text" name="email" id="email")
+              label(for="email") Email
+            div.input-field
+              input(type="password" name="password" id="password")
+              label(for="password") Password
+            button(type="submit", class="btn waves-effect blue darken-2") Register

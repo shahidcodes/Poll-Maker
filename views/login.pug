@@ -8,11 +8,12 @@ block content
         div.col.s12.m12
           form(action="/login", method="POST")
             div.input-field
-              input(type="text", name="username")
+              input(type="text", name="username" required)
               label(for="username") Username
             div.input-field
-              input(type="text", name="password")
+              input(type="text", name="password" required)
               label(for="password") Password
             div.input-field
               input(type="submit", class="btn" value="login")
+              a(href="/register" class="btn") Register
         div.clearfix

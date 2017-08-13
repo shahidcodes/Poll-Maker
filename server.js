@@ -8,7 +8,10 @@ var session = require('express-session')
 var uniqueString = require('unique-string');
 var ObjectId = require('mongodb').ObjectId; 
 var uuid = require('uuid/v4');
-var cookieParser = require('cookie-parser')
+var cookieParser = require('cookie-parser');
+var emailCheck = require('email-check');
+var Poll = require('./Poll')
+var poll ; 
 
 app.use(session({
   secret: process.env.SECRET,
@@ -77,12 +80,13 @@ app.use(function(request, response, next){
 })
 
 
-// view all polls (duplicate to / )
+// view mypolls
 
-app.get("/polls", function(request, response){
+app.get("/mypolls", authMiddleware ,function(request, response){
+  var userObjectID = new ObjectId(request.session.userID)
   const db = app.locals.db
-  db.collection("Polls").find({}).toArray(function(err, data){
-    response.render('index', {
+  db.collection("Polls").find({user : userObjectID}).toArray(function(err, data){
+    response.render('mypolls', {
         title:"Polls",
         data, 
         auth:getAuth(request.session), 
@@ -100,7 +104,6 @@ app.get("/poll/create", authMiddleware ,function(request, response){
 })
 app.post("/poll/create", authMiddleware ,function(request, response){
   var options = request.body["options[]"]
-  // console.log(request.body)
   const poll = {
     "name" : request.body.title,
     "options" : [],
@@ -133,9 +136,25 @@ app.post("/poll/create", authMiddleware ,function(request, response){
   
 })
 
+// delete the poll
+
+app.get("/poll/delete/:id", authMiddleware, function(request, response){
+  try{
+    var pollID = new ObjectId(request.params.id)
+    poll.deletePoll(pollID).then(function(){
+      request.session.flash = "Poll Deleted!"
+      response.redirect("/mypolls")
+    }).catch(function(err){
+      response.render('error', {error : err})
+    })
+    }catch(err){
+      response.render('error', {error : err})
+    }
+})
+
 // log user in
 app.get("/login", function(request, response){
-  response.render('login', {msg: getFlashMessage(request)})
+  response.render('login', {title: "Login" , msg: getFlashMessage(request)})
 })
 app.post("/login", function(request, response){
   
@@ -148,7 +167,7 @@ app.post("/login", function(request, response){
     request.session.loggedIn = true
     request.session.username = username
     request.session.userID = id.toString();
-    request.session.flash = "Logged in"
+    request.session.flash = "Welcome " + username
     // change user cookie
     console.log("Logged User ID", id)
     response.cookie('user_id', id.toString());
@@ -165,11 +184,23 @@ app.post("/login", function(request, response){
 
 // register
 app.get("/register", function(request, response){
-  
+  response.render('register', {
+    msg: getFlashMessage(request)
+  })
 })
 
 app.post("/register", function(request, response){
-  
+  var creds = request.body
+  User.validate(creds).then(function(){
+    User.makeUser(creds, app.locals.db).then(function(){
+      request.session.flash = "Succesfully registered. Please Login."
+      response.redirect("/login")
+    }).catch(function(err){
+      response.render("error", {error: err})
+    })
+  }).catch(function(err){
+    response.render('login', {"error" : err})
+  });
 })
 
 
@@ -196,6 +227,7 @@ app.get("/poll/:id" ,function(request, response){
     if(!err) response.render("view_poll", {
           auth:getAuth(request.session),
           "data" : data, 
+          "title" : data.name + " | Poll Maker",
           "optionNames" : JSON.stringify(optionNames), 
           "optionValues" : JSON.stringify(optionValues),
           "msg" : getFlashMessage(request)
@@ -211,6 +243,11 @@ app.get("/poll/:id" ,function(request, response){
 app.post("/poll/:id", authMiddleware ,function(request, response){
   const id = request.params.id
   const optionIndex = request.body.option
+  if(!optionIndex){
+    request.session.flash = "Empty vote really?"
+    response.redirect("/")
+    return;
+  }
   console.log("POST /poll/", id, optionIndex)
   const db = app.locals.db
   
@@ -252,7 +289,7 @@ app.get("/", function (request, response) {
   const db = app.locals.db
   db.collection("Polls").find({}).toArray(function(err, data){
     response.render('index', {
-        title:"Polls",
+        title:"Poll Maker - Create And Share Poll Easily",
         data, 
         auth:getAuth(request.session), 
         msg: getFlashMessage(request)
@@ -261,6 +298,7 @@ app.get("/", function (request, response) {
 });
 
 database.connect(app).then(db=>{
+  poll = new Poll(db)
   var listener = app.listen(process.env.PORT, function () {
     console.log('Your app is listening on port ' + listener.address().port);
   });

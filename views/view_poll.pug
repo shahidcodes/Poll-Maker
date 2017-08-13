@@ -6,7 +6,11 @@ block content
       form(action="/poll/"+data._id, method="POST")
         .card-content
           span.card-title
-            h2=data.name
+            h2.left.flow-text=data.name
+            p.right
+              - var params = encodeURI("url=https://trending-polls.glitch.me/poll/"+data._id+"&text="+data.name+"&hashtags=poll,100DaysOfCode,freeCodeCamp")
+              a(target="_blank" href="https://twitter.com/intent/tweet/?"+params)
+                i.fa.fa-twitter
           div.row
             div.col.s12.m12
               each option, index in data.options
