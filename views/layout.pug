@@ -1,66 +1,78 @@
 html
   head
     title #{title}
+    link(rel="icon" href="https://cdn.glitch.com/a968d8c3-cae2-4b69-a793-a406bb53fd68%2Ffavicon.ico?1502617507938" type="image/x-icon")
     link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/css/materialize.min.css")
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
     link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css")
     link(rel="stylesheet", href="/css/style.css")
+    block head
     
   body.grey.lighten-2
-    nav.blue.accent-3
-      .nav-wrapper
-        .container
-          a.brand-logo(href='/') Poll Maker
-          a.button-collapse(href='#', data-activates='mobile-demo')
-            i.fa.fa-2x.fa-bars
-          ul#nav-mobile.right.hide-on-med-and-down
-            - if(!auth) auth = {};
-            if auth.login
-              li
-                a(href="/poll/create" class='tooltipped' data-position="bottom" data-delay="50" data-tooltip="Create A Poll")
-                  i.fa.fa-plus
-              li
-                a(href='/logout' class='tooltipped' data-position="bottom" data-delay="50" data-tooltip="Logout")
-                  i.fa.fa-sign-out
-              li
-                a(href='/mypolls'  class='tooltipped' data-position="bottom" data-delay="50" data-tooltip="My Polls")
-                  i.fa.fa-th-list
-            else
-              li
-                a(href='/login'  class='tooltipped' data-position="bottom" data-delay="50" data-tooltip="Login")
-                  i.fa.fa-sign-in
-              li
-                a(href='/register'  class='tooltipped' data-position="bottom" data-delay="50" data-tooltip="Register")
-                  i.fa.fa-user-plus
+    header
+      nav.blue.accent-3
+        .nav-wrapper
+          .container
+            a.brand-logo(href='/') Poll Maker
+            a.button-collapse(href='#', data-activates='mobile-demo')
+              i.fa.fa-2x.fa-bars
+            ul#nav-mobile.right.hide-on-med-and-down
+              - if(!auth) auth = {};
+              if auth.login
+                li
+                  a(href="/poll/create" class='tooltipped' data-position="bottom" data-delay="50" data-tooltip="Create A Poll")
+                    i.fa.fa-plus
+                li
+                  a(href='/logout' class='tooltipped' data-position="bottom" data-delay="50" data-tooltip="Logout")
+                    i.fa.fa-sign-out
+                li
+                  a(href='/mypolls'  class='tooltipped' data-position="bottom" data-delay="50" data-tooltip="My Polls")
+                    i.fa.fa-th-list
+              else
+                li
+                  a(href='/login'  class='tooltipped' data-position="bottom" data-delay="50" data-tooltip="Login")
+                    i.fa.fa-sign-in
+                li
+                  a(href='/register'  class='tooltipped' data-position="bottom" data-delay="50" data-tooltip="Register")
+                    i.fa.fa-user-plus
 
-          ul#mobile-demo.side-nav.black-text
-            - if(!auth) auth = {};
-            if auth.login
-              li
-                a(href="/poll/create")
-                  i.fa.fa-plus
-                  span Create A Poll
-              li
-                a(href='/logout')
-                  i.fa.fa-sign-out
-                  span Logout
-              li
-                a(href='/mypolls')
-                  i.fa.fa-th-list
-                  span My Polls
-            else
-              li
-                a(href='/login')
-                  i.fa.fa-sign-in
-                  span Login
-              li
-                a(href='/register')
-                  i.fa.fa-user-plus
-                  span Register
+            ul#mobile-demo.side-nav.black-text
+              - if(!auth) auth = {};
+              if auth.login
+                li
+                  a(href="/poll/create")
+                    i.fa.fa-plus
+                    span Create A Poll
+                li
+                  a(href='/logout')
+                    i.fa.fa-sign-out
+                    span Logout
+                li
+                  a(href='/mypolls')
+                    i.fa.fa-th-list
+                    span My Polls
+              else
+                li
+                  a(href='/login')
+                    i.fa.fa-sign-in
+                    span Login
+                li
+                  a(href='/register')
+                    i.fa.fa-user-plus
+                    span Register
+    main
+      div.container
+        block content
+    footer.page-footer.blue.accent-3
+      .footer-copyright
+        div.container
+          span.white-text Created by Shahid Kamal
+          a(href="https://twitter.com/sh4hidkh4n" class="white-text right")
+            i.fa.fa-twitter.fa-2x
+          a(href="https://github.com/sh4hidkh4n/Poll-Maker" class="white-text right")
+            i.fa.fa-github.fa-2x
 
-    div.container
-      block content
-      
+    
   script(src="https://code.jquery.com/jquery-3.2.1.min.js")
   script(src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/js/materialize.min.js")
   script.

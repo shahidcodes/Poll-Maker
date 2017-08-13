@@ -38,13 +38,22 @@ function validate(creds){
 
 function makeUser(creds, db){
   return new Promise(function(resolve, reject){
-    db.collection("Users").insertOne(creds, function(err, data){
-      if(err) reject(err)
-      if(data.insertedCount == 1){
-        resolve()
-      }else{
-        reject("Unknow error!")
+    getUserByUsername(db, creds.username).then(function(data){
+      console.log("User Exists? ", data)
+      if(data)
+        reject("user-exists");
+      else{
+        db.collection("Users").insertOne(creds, function(err, data){
+          if(err) reject(err)
+          if(data.insertedCount == 1){
+            resolve()
+          }else{
+            reject("Unknow error!")
+          }
+        })
       }
+    }).catch(err=>{
+      reject(err)
     })
   })
 }
