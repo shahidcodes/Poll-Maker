@@ -4,8 +4,8 @@ block content
   div.row
     div.card
       div.card-content
-        span.card-title Login
-        div.col.s12.m12
+        span.card-title.center Login
+        div.col.s12.push-m3.m6
           form(action="/login", method="POST")
             div.input-field
               input(type="text", name="username" required)
@@ -14,6 +14,6 @@ block content
               input(type="text", name="password" required)
               label(for="password") Password
             div.input-field
-              input(type="submit", class="btn" value="login")
-              a(href="/register" class="btn") Register
+              input(type="submit", class="btn left" value="login")
+              a(href="/register" class="btn right") Register
         div.clearfix

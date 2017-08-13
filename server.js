@@ -196,6 +196,11 @@ app.post("/register", function(request, response){
       request.session.flash = "Succesfully registered. Please Login."
       response.redirect("/login")
     }).catch(function(err){
+      if(err == 'user-exists'){
+        request.session.flash = "Username already exists"
+        response.redirect('/register')
+        return;
+      }
       response.render("error", {error: err})
     })
   }).catch(function(err){
@@ -279,6 +284,18 @@ app.post("/poll/:id", authMiddleware ,function(request, response){
               }
           })
     }
+  })
+})
+
+app.get("/finduser/:username", function(request,response){
+  const username = request.params.username
+  console.log(username)
+  User.getUserByUsername(app.locals.db, username).then(function(data){
+    console.log("user found", data)
+    response.json(data)
+  }).catch(function(err){
+    response.json(err)
+    console.log("user not found", err)
   })
 })
 

@@ -1,5 +1,12 @@
 extends layout.pug
 
+
+block append head
+  meta(name='twitter:card', content='summary')
+  meta(name='twitter:site', content='@sh4hidkh4n')
+  meta(name='twitter:title', content='This is getting interesting. Have a look?')
+  meta(name='twitter:description', content=data.name)
+
 block content
   .row
     .card
